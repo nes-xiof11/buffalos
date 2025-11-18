@@ -7,7 +7,7 @@ import (
 
 func main() {
 	args := os.Args
-	if len(args) > 2 {
+	if len(args) > 1 {
 		if args[1] == "--help" || args[1] == "-h" {
 
 		} else if args[1] == "--version" || args[1] == "-v" {
