@@ -69,8 +69,7 @@ cd buffalos
 # 3. Baixe as dependências
 go mod tidy
 
-# 4. Execute as migrações (se aplicável)
-# [COMANDO PARA EXECUTAR AS MIGRAÇÕES]
+# 4. Execute as migrações
 #  migrate -database "postgres://..." -path migrations up
 
 # 5. Inicie a aplicação
