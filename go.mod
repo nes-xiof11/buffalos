@@ -1,4 +1,4 @@
-module aura-payments-service
+module buffalos
 
 go 1.24.0
 
