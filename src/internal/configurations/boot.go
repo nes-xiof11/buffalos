@@ -1,10 +1,15 @@
 package configurations
 
 import (
+	"buffalos/src/internal/controllers"
 	repositories "buffalos/src/internal/repositories"
+	"buffalos/src/internal/services"
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -27,6 +32,7 @@ type Repositories struct {
 }
 
 type Services struct {
+	User *services.User
 }
 
 func Boot() *App {
@@ -57,7 +63,9 @@ func setupRepos(db *sql.DB) Repositories {
 }
 
 func setupServices(repos Repositories) *Services {
-	return &Services{}
+	return &Services{
+		User: &services.User{Repo: repos.Users},
+	}
 }
 
 func setupServer(service *Services) *gin.Engine {
@@ -74,5 +82,38 @@ func setupServer(service *Services) *gin.Engine {
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	users := controllers.NewUserController(service.User)
+	users.RegisterRoutes(r)
+
 	return r
+}
+
+func Run() {
+	app := Boot()
+	defer app.CancelFunc()
+
+	defer func() {
+		if err := app.DB.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	portStr := os.Getenv("PORT")
+	if portStr == "" {
+		portStr = "8080"
+	}
+	port, err := strconv.Atoi(portStr)
+	if err != nil {
+		log.Fatalf("Invalid PORT value: %v", err)
+	}
+
+	address := os.Getenv("ADDRESS")
+	if address == "" {
+		address = "0.0.0.0"
+	}
+	addr := fmt.Sprintf("%s:%d", address, port)
+
+	if err := app.Router.Run(addr); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
 }
