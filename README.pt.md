@@ -1,7 +1,7 @@
 
 # `buffalos` Template
 
-[Read in English](README.en.md)
+[Read in English](README.md)
 
 ## Sobre
 
